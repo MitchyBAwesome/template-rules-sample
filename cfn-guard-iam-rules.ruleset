@@ -1,0 +1,20 @@
+let iam_role = Resources.*[ Type == 'AWS::IAM::Role' ]
+
+# Rule intent 
+# a) All IAM roles must have a AssumeRolePolicyDocument that includes a global condition key
+
+# Expectations:
+# 1) SKIP when there are no IAM roles in the template
+# 2) PASS AssumeRolePolicyDocument propery for an IAM role MUST have one IAM Condition key with aws:PrincipalOrgID
+# 3) FAIL otherwise
+
+
+rule check_that_iam_roles_have_key_condition when %iam_role !empty {
+    %iam_role.Properties {
+        # ALL IAM roles must have atleast one IAM statement that has Condition keys with 
+        #     aws:PrincipalOrgID
+        some AssumeRolePolicyDocument.Statement[*] {
+            Condition.*[ keys == /aws:[pP]rincipal[oO]rg(Id|ID|id)/ ] !empty
+        }
+    }
+}
