@@ -12,6 +12,9 @@ Resources:
             Principal:
               AWS: arn:aws:iam::123456789101:root
             Action: ['sts:AssumeRole']
+            Condition:
+              StringLike: 
+                aws:PrincipalOrgID: "122345" 
         Path: /
         Policies:
           - PolicyName: AmazonEc2LaunchInstances
